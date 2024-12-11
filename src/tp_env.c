@@ -9,6 +9,11 @@ int main(int argc,char *argv[])
 /* ** argv: Valeur des arguments */
 {
 	printf("--------- Test environment of execution for Practical exercises of Numerical Algorithmics ---------\n\n");
+
+	double *GB;
+	
+
+	/*
 	printf("The exponantial value is e = %f \n",M_E);
 	printf("The maximum single precision value from values.h is maxfloat = %e \n",MAXFLOAT);
 	printf("The maximum single precision value from float.h is flt_max = %e \n",FLT_MAX);
@@ -30,6 +35,7 @@ int main(int argc,char *argv[])
 	for (ii=0;ii<5;ii++){
 		printf("y[%d] = %lf\n",ii,y[ii]);
 	}
+	*/
 
 	printf("\n\n--------- End -----------\n");
 }

@@ -13,7 +13,7 @@ void write_GB_operator_rowMajor_poisson1D(double* AB, int* lab, int* la, char* f
 	if (file != NULL){
 		for (ii=0;ii<(*lab);ii++){
 			for (jj=0;jj<(*la);jj++){
-	fprintf(file,"%lf\t",AB[ii*(*la)+jj]);
+				fprintf(file,"%lf\t",AB[ii*(*la)+jj]);
 			}
 			fprintf(file,"\n");
 		}
@@ -32,7 +32,7 @@ void write_GB_operator_colMajor_poisson1D(double* AB, int* lab, int* la, char* f
 	if (file != NULL){
 		for (ii=0;ii<(*la);ii++){
 			for (jj=0;jj<(*lab);jj++){
-	fprintf(file,"%lf\t",AB[ii*(*lab)+jj]);
+				fprintf(file,"%lf\t",AB[ii*(*lab)+jj]);
 			}
 			fprintf(file,"\n");
 		}
