@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "TME 01": "plaintext",
+        "lib_poisson1d.h": "c",
+        "atlas_headers.h": "c"
+    }
+}
