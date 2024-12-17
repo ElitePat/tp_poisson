@@ -4,6 +4,7 @@
 /* Poisson problem (Heat equation)            */
 /**********************************************/
 #include "lib_poisson1D.h"
+#define MAX(i, j) (((i) > (j)) ? (i) : (j)) // très utile (pourvu qu ça compile)
 
 // Stockage GB (General Band) en priorite colonne pour matrice Poisson 1D
 void set_GB_operator_colMajor_poisson1D(double* AB, int *lab, int *la, int *kv){
@@ -60,16 +61,47 @@ void set_analytical_solution_DBC_1D(double* EX_SOL, double* X, int* la, double* 
 }  
 
 void set_grid_points_1D(double* x, int* la){
+	
 }
 
-// la = |vevteur|
 double relative_forward_error(double* x, double* y, int* la){
+	/*la : taille de la matrice 
+	y : matrice resultat (On suppose que x et y sont carrées)
+	On a pas assez d'info pour faire appel aux fonctions lapack qui 
+	calculent la norme matricielle.
+	Alors on implemente "à la main" la definition de la norme infinie. */
+
+	// x - y:
+	double r[la];
+	for(int a=0;a<la*la;a++){
+		r[a] = x[a] - y[a];
+	}
+
+	// Norme infinie de (x-y) et de x
+	double xmax, xsome, rmax, rsome;
+	// on calcule les 2 en même temps (traitement identique)
+	for(int i=0;i<la;i++){
+		xsome = 0;
+		rsome = 0;
+		for(int j=0;j<la;j++){
+			// à priori fabs() retourne un double
+			xsome += fabs(x[i]);
+			rsome += fabs(y[i]);
+		}
+		xmax = MAX(xmax,xsome);
+		rmax = MAX(rmax,rsome);
+	}
+
+	//resultat
+	return rmax / xmax;
+
 }
 
 int indexABCol(int i, int j, int *lab){
 	return 0;
 }
 
+// factorisatoin LU pour matrices tridiagonales
 int dgbtrftridiag(int *la, int*n, int *kl, int *ku, double *AB, int *lab, int *ipiv, int *info){
 	return *info;
 }
