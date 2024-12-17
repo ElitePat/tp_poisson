@@ -5,25 +5,51 @@
 /**********************************************/
 #include "lib_poisson1D.h"
 
-// Stockage GB en priorite colonne pour la matrice de Poisson 1D
+// Stockage GB (General Band) en priorite colonne pour matrice Poisson 1D
 void set_GB_operator_colMajor_poisson1D(double* AB, int *lab, int *la, int *kv){
-	// AB est vide !
-	/*  Pour une matrice de Poisson 1D on aurait
+	/* AB represente la matrice (à remplir)
+	lab: nombre de diagonales de la matrice (diagonale)
+	la: taille maximale des diagonales
+	kv: offsets de securité (nombre de lignes supplementaires)
+
+	Soit pour une matrice de Poisson 1D on aurait l'appel:
 	set_GB_operator_colMajor_poisson1D(AB, 3, la, 1);
 	*/
-	int size = (*lab) * (*la) + (*kv); // nombre total d'elemnts AB
-	int ld = (*lab) + (*kv); // nombre de lignes de AB
-	int cntr = (*lab) - (*kv);
-	int kkv = (*kv); // on prend la première valeur
-	for(int i=0;i<size;i++){
-		if(i%ld == 0){
-			AB[i] = 0;
-		}else if((i%size = kkv)%){}
+
+	// Variables 
+	int size = lab * la + (la * kv); // nombre total d'elemnts AB
+	int ld = lab + kv; // nombre de lignes de AB
+	int cntr = lab - kv; // la ligne centrale (à remplir avec des 2) 
+	// normalement cntr = 2 puisque matrice Poisson 1D
+	int i;
+
+	// nous allons passer par 3 boucles:
+	for(i=0;i<size;i++){ // on met tout à zéro
+		AB[i] = 0;
+	}
+	for(i=cntr;i<size;i+ld){ // on rempli la ligne centrale
+		AB[i] = 2;
+	}
+	for(int j=1;j<ld;j+2){
+		for(i=j;i<size-1;i+ld){ // size-1 pour ne pas faire la dernière valeur
+			if(i != 1){ // on saute aussi l'elemtent a(1,2) de la
+				AB[i] = -1;
+			}
+		}
 	}
 }
 
-// Identité
+// Identité 
 void set_GB_operator_colMajor_poisson1D_Id(double* AB, int *lab, int *la, int *kv){
+	// on applique le même raisonement que pour la fonction precedente:
+
+	// Variables 
+	int size = lab * la + (la * kv); // nombre total d'elemnts AB
+	int ld = lab + kv; // nombre de lignes de AB
+	int cntr = (int)((ld / 2.0) + 1); // la ligne centrale (à remplir avec des 1)
+	int i;
+
+	/* en vrai de vrai, à voir ================================================= */
 }
 
 // 
