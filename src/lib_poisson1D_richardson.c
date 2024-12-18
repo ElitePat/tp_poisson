@@ -9,21 +9,20 @@
 
 // remplir le tableau des valeurs propres
 void eig_poisson1D(double* eigval, int *la){
-	///*================== version de Pierre ==================
 	double h = (1.0 / ((double)(*la) + 1.0));
 	double sinT;
 	for(int k=1;k<=(*la);k++){
-		sinT = sin((double)k * M_PI * h / 2.0);
+		sinT = sin(((double)k * M_PI * h)/ 2.0);
 		eigval[k-1] = 4 * sinT * sinT;
 	}
 	/* On met k-1 car on compte les valeurs de 1 à K
 	et en C on commence à 0 */
-	/*======================== Fin ========================*/
 }
 
 double eigmax_poisson1D(int *la){
-
-	return 0;
+	// on peut reutiliser la fonction précedente
+	// où utiliser la formule directe
+	return 4 * pow(sin( (*la) * M_PI * (1.0/((*la) + 1) / 2.0)),2);
 }
 
 double eigmin_poisson1D(int *la){
