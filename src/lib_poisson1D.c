@@ -4,7 +4,8 @@
 /* Poisson problem (Heat equation)            */
 /**********************************************/
 #include "lib_poisson1D.h"
-#define MAX(i, j) (((i) > (j)) ? (i) : (j)) // très utile (pourvu qu ça compile)
+
+#define MAX(i, j) (((i) > (j)) ? (i) : (j)) // très utile !
 
 // Stockage GB (General Band) en priorite colonne pour matrice Poisson 1D
 void set_GB_operator_colMajor_poisson1D(double* AB, int *lab, int *la, int *kv){

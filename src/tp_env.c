@@ -4,7 +4,6 @@
 /* test the environment of compilation    */
 /******************************************/
 #include "tp_env.h"
-#define N 4 // taille matrices (pour l'instant carrées)
 
 int main(int argc,char *argv[])
 /* ** argc: Nombre d'arguments */
@@ -12,10 +11,13 @@ int main(int argc,char *argv[])
 {
 	printf("--------- Test environment of execution for Practical exercises of Numerical Algorithmics ---------\n\n");
 
+	/*
 	printf("Test de la méthode dgbmv de BLAS\n");
 	// declaration des varaibles
 	double alpha=1 ,beta=2; // scalaires
 	double *GB, *ID, *x, *y; // matrice poisson 1D dans GB, matrice Id en ID et vecteurs
+	int un=1, trois=3, N=4; // N=taille matrices (pour l'instant carrées)
+
 
 	// phase d'allocation mémoire
 	x = (double *) malloc(sizeof(double)*N);
@@ -23,37 +25,37 @@ int main(int argc,char *argv[])
 	GB = (double *) malloc(sizeof(double)*N*N);
 
 	// instantiation des variables
-	set_GB_operator_colMajor_poisson1D_Id(ID,1,N,1);
-	set_GB_operator_colMajor_poisson1D(GB, 3, N, 1);
+	set_GB_operator_colMajor_poisson1D_Id(ID,&un,&N,&un);
+	set_GB_operator_colMajor_poisson1D(GB, &trois, &N, &un);
 	// afichage de la matrice
 	for(int i=0;i<N;i++){
 		for(int j=0;j<N;j++){
-			printf(" %ld",GB[N*i+j]);
+			printf(" %lf",GB[N*i+j]);
 		}
 		printf("\n");
 	}
 
-	for(int i=0,i<N;i++){
+	for(int i=0;i<N;i++){
 		x[i] = 0;
 		y[i] = 0;
 	} // pour l'instant on fait simple
 
 
-	// appel a dgbmv qui faira le calcul suivant: y := alpha*GB*x + beta*y
-	dgbmv('N',N,N,1,1,alpha,GB,N,x,1,beta,y,1);
+	// appel a cblas_dgbmv qui faira le calcul suivant: y := alpha*GB*x + beta*y
+	cblas_dgbmv(CblasColMajor,CblasNoTrans,N,N,1,1,alpha,GB,N,x,N,beta,y,N);
 	// c'est le vecteur y qui contient le resultat de l'appel
 
 	// affichage du resultat y:
 	for(int k=0;k<N;k++){
-		printf("| %ld |\n",y[i]);
+		printf("| %lf |\n",y[k]);
 	}
 
 	free(x);
 	free(y);
 	free(GB);
-	
+	*/
 
-	/*
+	
 	printf("The exponantial value is e = %f \n",M_E);
 	printf("The maximum single precision value from values.h is maxfloat = %e \n",MAXFLOAT);
 	printf("The maximum single precision value from float.h is flt_max = %e \n",FLT_MAX);
@@ -75,7 +77,6 @@ int main(int argc,char *argv[])
 	for (ii=0;ii<5;ii++){
 		printf("y[%d] = %lf\n",ii,y[ii]);
 	}
-	*/
 
 	printf("\n\n--------- End -----------\n");
 }
