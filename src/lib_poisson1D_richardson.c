@@ -5,6 +5,7 @@
 /**********************************************/
 #include "lib_poisson1D.h"
 
+// remplir le tableau des valeurs propres
 void eig_poisson1D(double* eigval, int *la){
 }
 

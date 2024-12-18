@@ -46,8 +46,8 @@ void set_GB_operator_colMajor_poisson1D_Id(double* AB, int *lab, int *la, int *k
 
 	// Variables 
 	int size = lab * la + (la * kv); // nombre total d'elemnts AB
-	int ld = lab + kv; // nombre de lignes de AB
-	int cntr = (ld / 2.0) + 1; // la ligne centrale (à remplir avec des 1)
+	int ld = lab + kv; // nombre de lignes de AB (normalement 2)
+	int cntr = ld / 2; // la ligne centrale (à remplir avec des 1) (normalement égal. 2)
 	int i;
 
 	for(i=0;i<size;i++){ // le reste de la matrice

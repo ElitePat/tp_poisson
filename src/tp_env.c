@@ -15,7 +15,7 @@ int main(int argc,char *argv[])
 	printf("Test de la méthode dgbmv de BLAS\n");
 	// declaration des varaibles
 	double alpha=1 ,beta=2; // scalaires
-	double *GB, *x, *y; // matrice poisson 1D en GB et vecteurs
+	double *GB, *ID, *x, *y; // matrice poisson 1D dans GB, matrice Id en ID et vecteurs
 
 	// phase d'allocation mémoire
 	x = (double *) malloc(sizeof(double)*N);
@@ -23,6 +23,7 @@ int main(int argc,char *argv[])
 	GB = (double *) malloc(sizeof(double)*N*N);
 
 	// instantiation des variables
+	set_GB_operator_colMajor_poisson1D_Id(ID,1,N,1);
 	set_GB_operator_colMajor_poisson1D(GB, 3, N, 1);
 	// afichage de la matrice
 	for(int i=0;i<N;i++){
