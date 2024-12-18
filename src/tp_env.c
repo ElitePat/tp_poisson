@@ -13,6 +13,7 @@ int main(int argc,char *argv[])
 	printf("--------- Test environment of execution for Practical exercises of Numerical Algorithmics ---------\n\n");
 
 	printf("Test de la méthode dgbmv de BLAS\n");
+	// declaration des varaibles
 	double alpha=1 ,beta=2; // scalaires
 	double *GB, *x, *y; // matrice poisson 1D en GB et vecteurs
 
@@ -21,21 +22,29 @@ int main(int argc,char *argv[])
 	y = (double *) malloc(sizeof(double)*N);
 	GB = (double *) malloc(sizeof(double)*N*N);
 
+	// instantiation des variables
 	set_GB_operator_colMajor_poisson1D(GB, 3, N, 1);
-	for(int i=0,i<N;i++){
-		x[i] = 0;
-		y[i] = 0;
-	} // pour l'instant on fait simple
-
-	// appel a dgbmv qui faira le calcul suivant: y := alpha*GB*x + beta*y
-	dgbmv('N',N,N,1,1,alpha,GB,N,x,1,beta,y,1);
-	// c'est le vecteur y qui contient le resultat de l'appel
-
+	// afichage de la matrice
 	for(int i=0;i<N;i++){
 		for(int j=0;j<N;j++){
 			printf(" %ld",GB[N*i+j]);
 		}
 		printf("\n");
+	}
+
+	for(int i=0,i<N;i++){
+		x[i] = 0;
+		y[i] = 0;
+	} // pour l'instant on fait simple
+
+
+	// appel a dgbmv qui faira le calcul suivant: y := alpha*GB*x + beta*y
+	dgbmv('N',N,N,1,1,alpha,GB,N,x,1,beta,y,1);
+	// c'est le vecteur y qui contient le resultat de l'appel
+
+	// affichage du resultat y:
+	for(int k=0;k<N;k++){
+		printf("| %ld |\n",y[i]);
 	}
 
 	free(x);

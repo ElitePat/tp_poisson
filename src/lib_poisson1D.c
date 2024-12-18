@@ -20,7 +20,7 @@ void set_GB_operator_colMajor_poisson1D(double* AB, int *lab, int *la, int *kv){
 	// Variables 
 	int size = lab * la + (la * kv); // nombre total d'elemnts AB
 	int ld = lab + kv; // nombre de lignes de AB
-	int cntr = lab - kv; // la ligne centrale (à remplir avec des 2) 
+	int cntr = (ld / 2) + 1; // la ligne centrale (à remplir avec des 2) 
 	// normalement cntr = 2 puisque matrice Poisson 1D
 	int i;
 
@@ -40,17 +40,22 @@ void set_GB_operator_colMajor_poisson1D(double* AB, int *lab, int *la, int *kv){
 	}
 }
 
-// Identité 
+// Identité (peut servir pour les méthodes de validation)
 void set_GB_operator_colMajor_poisson1D_Id(double* AB, int *lab, int *la, int *kv){
 	// on applique le même raisonement que pour la fonction precedente:
 
 	// Variables 
 	int size = lab * la + (la * kv); // nombre total d'elemnts AB
 	int ld = lab + kv; // nombre de lignes de AB
-	int cntr = (int)((ld / 2.0) + 1); // la ligne centrale (à remplir avec des 1)
+	int cntr = (ld / 2.0) + 1; // la ligne centrale (à remplir avec des 1)
 	int i;
 
-	/* en vrai de vrai, à voir ================================================= */
+	for(i=0;i<size;i++){ // le reste de la matrice
+		AB[i] = 0;
+	}
+	for(i=cntr;i<size;i+ld){ // la diagonale unitaire
+		AB[i] = 1;
+	}
 }
 
 // 
@@ -60,6 +65,7 @@ void set_dense_RHS_DBC_1D(double* RHS, int* la, double* BC0, double* BC1){
 void set_analytical_solution_DBC_1D(double* EX_SOL, double* X, int* la, double* BC0, double* BC1){
 }  
 
+// 
 void set_grid_points_1D(double* x, int* la){
 	
 }
