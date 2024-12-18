@@ -19,8 +19,8 @@ void set_GB_operator_colMajor_poisson1D(double* AB, int *lab, int *la, int *kv){
 	*/
 
 	// Variables 
-	int size = lab * la + (la * kv); // nombre total d'elemnts AB
-	int ld = lab + kv; // nombre de lignes de AB
+	int size = (*lab) * (*la) + ((*la) * (*kv)); // nombre total d'elemnts AB
+	int ld = (*lab) + (*kv); // nombre de lignes de AB
 	int cntr = (ld / 2) + 1; // la ligne centrale (à remplir avec des 2) 
 	// normalement cntr = 2 puisque matrice Poisson 1D
 	int i;
@@ -46,16 +46,16 @@ void set_GB_operator_colMajor_poisson1D_Id(double* AB, int *lab, int *la, int *k
 	// on applique le même raisonement que pour la fonction precedente:
 
 	// Variables 
-	int size = lab * la + (la * kv); // nombre total d'elemnts AB
-	int ld = lab + kv; // nombre de lignes de AB (normalement 2)
-	int cntr = ld / 2; // la ligne centrale (à remplir avec des 1) (normalement égal. 2)
+	int size = (*lab) * (*la) + ((*la) * (*kv)); // nombre total d'elemnts AB
+	int ld = (*lab) + (*kv); // nombre de lignes de AB (normalement 2)
+	int cntr = ld - 1; // car matrice identité !
 	int i;
 
 	for(i=0;i<size;i++){ // le reste de la matrice
 		AB[i] = 0;
 	}
-	for(i=cntr;i<size;i+ld){ // la diagonale unitaire
-		AB[i] = 1;
+	for(i=cntr;i<size;i+ld){ // on saute de colone en colone
+		AB[i] = 1;// la ligne principale (à remplir avec des 1)
 	}
 }
 
@@ -79,18 +79,18 @@ double relative_forward_error(double* x, double* y, int* la){
 	Alors on implemente "à la main" la definition de la norme infinie. */
 
 	// x - y:
-	double r[la];
-	for(int a=0;a<la*la;a++){
+	double r[(*la)];
+	for(int a=0;a<(*la)*(*la);a++){
 		r[a] = x[a] - y[a];
 	}
 
 	// Norme infinie de (x-y) et de x
 	double xmax, xsome, rmax, rsome;
 	// on calcule les 2 en même temps (traitement identique)
-	for(int i=0;i<la;i++){
+	for(int i=0;i<(*la);i++){
 		xsome = 0;
 		rsome = 0;
-		for(int j=0;j<la;j++){
+		for(int j=0;j<(*la);j++){
 			// à priori fabs() retourne un double
 			xsome += fabs(x[i]);
 			rsome += fabs(y[i]);

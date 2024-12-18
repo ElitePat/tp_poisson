@@ -10,9 +10,9 @@
 // remplir le tableau des valeurs propres
 void eig_poisson1D(double* eigval, int *la){
 	///*================== version de Pierre ==================
-	double h = (1.0 / ((double)(la) + 1.0));
+	double h = (1.0 / ((double)(*la) + 1.0));
 	double sinT;
-	for(int k=1;k<=la;k++){
+	for(int k=1;k<=(*la);k++){
 		sinT = sin((double)k * M_PI * h / 2.0);
 		eigval[k-1] = 4 * sinT * sinT;
 	}
