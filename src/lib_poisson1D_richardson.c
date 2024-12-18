@@ -34,6 +34,27 @@ double richardson_alpha_opt(int *la){
 }
 
 void richardson_alpha(double *AB, double *RHS, double *X, double *alpha_rich, int *lab, int *la,int *ku, int*kl, double *tol, int *maxit, double *resvec, int *nbite){
+	/* AB : matrice poisson1D 
+	RHS : matrice dense (à priori)
+	X : matrice/vecteur solution
+	tol : la tolerance */
+
+	double *Y = malloc((*la)*sizeof(double));
+
+	cblas_dcopy(Y,RHS);
+	double nomrY = cblas_nomr2(Y);
+	cblas_dgbmv(CblasColMajor,CblasNoTrans,(*la),(*la),(*kl),(*ku),-1.0,AB,(*lab),X,1,1.0,Y,1);
+	double nomr_res = cblas_dnorm(Y);
+	double residu = nomr_res / nomrY;
+
+	while((res > (*tol)) && ((*nbite) < (*maxit))){
+		cblas_daxpy((*la),(*alpha_rich),Y,1,X,1);
+		resvec[(*nbite)] = res;
+		(*nbite)++;
+	}
+
+	free(Y); //
+
 }
 
 void extract_MB_jacobi_tridiag(double *AB, double *MB, int *lab, int *la,int *ku, int*kl, int *kv){
@@ -42,6 +63,7 @@ void extract_MB_jacobi_tridiag(double *AB, double *MB, int *lab, int *la,int *ku
 void extract_MB_gauss_seidel_tridiag(double *AB, double *MB, int *lab, int *la,int *ku, int*kl, int *kv){
 }
 
+// le truc general
 void richardson_MB(double *AB, double *RHS, double *X, double *MB, int *lab, int *la,int *ku, int*kl, double *tol, int *maxit, double *resvec, int *nbite){
 }
 
