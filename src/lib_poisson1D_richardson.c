@@ -46,12 +46,12 @@ void richardson_alpha(double *AB, double *RHS, double *X, double *alpha_rich, in
 
 	cblas_dcopy((*la),Y,RHS); // arguments like N, X, incX, Y, incY
 	double nomrY = cblas_nomr2(Y);
-	cblas_dgbmv(CblasColMajor,CblasNoTrans,(*la),(*la),(*kl),(*ku),-1.0,AB,(*lab),X,1,1.0,Y,1);
+	cblas_dgbmv(CblasColMajor,CblasNoTrans,(*la),(*la),(*kl),(*ku),-1.0,AB,(*lab),X,1,1.0,Y,1); // alpha*A*x + beta*y
 	double nomr_res = cblas_dnorm(Y);
 	double res = nomr_res / nomrY;
 
 	while((res > (*tol)) && ((*nbite) < (*maxit))){
-		cblas_daxpy((*la),(*alpha_rich),Y,1,X,1);
+		cblas_daxpy((*la),(*alpha_rich),Y,1,X,1); // Ax + y
 		resvec[(*nbite)] = res;
 		(*nbite)++;
 	}
@@ -60,15 +60,48 @@ void richardson_alpha(double *AB, double *RHS, double *X, double *alpha_rich, in
 }
 
 void extract_MB_jacobi_tridiag(double *AB, double *MB, int *lab, int *la,int *ku, int*kl, int *kv){
+	/*
+	Jaccobi utilise la diagonale de A [selon la formule x(k+1) = x(k) + M^(-1) * (b-A*x(k))]
+	la: taille de la diagonale
+	lab: nombre de lignes
+	AB: matrice poisson 1D (?)
+	MB: matrice diagonale de taille lab*la (en GB)
+	ku: nombre de diagonales superieures
+	kl: nombre de diagonales inferieures
+	kv: taille de l'offset
+	*/
+
+	for(int i=0;i<la;i++){ // pour chaque colonne
+		for(int j=0;j<(lab+kv);j++){ // pour chaque ligne j augmente mais (lab+kv - j) diminue
+			if(j==(ku+kv)){ // on cible la diagonale
+				MB[la*i+j] = 1 / AB[la*i+j]; // pour avoir l'inverse de la diagonale extraite
+			}else{
+				MB[la*i+j] = 0;
+			}
+		}
+	}
 
 }
 
 void extract_MB_gauss_seidel_tridiag(double *AB, double *MB, int *lab, int *la,int *ku, int*kl, int *kv){
-	
+	/*
+	la: taille de la diagonale
+	lab: nombre de lignes
+	AB: matrice poisson 1D (?)
+	MB: matrice diagonale de taille lab*la (en GB)
+	ku: nombre de diagonales superieures
+	kl: nombre de diagonales inferieures
+	kv: taille de l'offset
+	*/
+
 }
 
 // le truc general
 void richardson_MB(double *AB, double *RHS, double *X, double *MB, int *lab, int *la,int *ku, int*kl, double *tol, int *maxit, double *resvec, int *nbite){
+	/*
+	les arguments sont les mêmes que pour la fonction richardson_alpha() sauf
+	MB: matrice d'itération (en GB) -> defini la méthode itérative de Richardson qu'on utilise
+	*/
 
 }
 
