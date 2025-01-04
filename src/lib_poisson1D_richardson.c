@@ -41,7 +41,7 @@ void richardson_alpha(double *AB, double *RHS, double *X, double *alpha_rich, in
 
 	double *Y = malloc((*la)*sizeof(double));
 
-	cblas_dcopy(Y,RHS);
+	cblas_dcopy((*la),Y,RHS); // arguments like N, X, incX, Y, incY
 	double nomrY = cblas_nomr2(Y);
 	cblas_dgbmv(CblasColMajor,CblasNoTrans,(*la),(*la),(*kl),(*ku),-1.0,AB,(*lab),X,1,1.0,Y,1);
 	double nomr_res = cblas_dnorm(Y);

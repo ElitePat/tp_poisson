@@ -59,16 +59,36 @@ void set_GB_operator_colMajor_poisson1D_Id(double* AB, int *lab, int *la, int *k
 	}
 }
 
-// 
+
 void set_dense_RHS_DBC_1D(double* RHS, int* la, double* BC0, double* BC1){
+	// correction
+	int jj;
+	RHS[0]= *BC0;
+	RHS[(*la)-1]= *BC1;
+	for (jj=1;jj<(*la)-1;jj++){
+		RHS[jj]=0.0;
+	}
 }  
 
 void set_analytical_solution_DBC_1D(double* EX_SOL, double* X, int* la, double* BC0, double* BC1){
+	// correction
+	int jj;
+	double h, DELTA_T;
+	DELTA_T=(*BC1)-(*BC0);
+	for (jj=0;jj<(*la);jj++){
+		EX_SOL[jj] = (*BC0) + X[jj]*DELTA_T;
+	}
 }  
 
-// 
+
 void set_grid_points_1D(double* x, int* la){
-	
+	// correction
+	int jj;
+	double h;
+	h=1.0/(1.0*((*la)+1));
+	for (jj=0;jj<(*la);jj++){
+		x[jj]=(jj+1)*h;
+	}
 }
 
 double relative_forward_error(double* x, double* y, int* la){
@@ -101,14 +121,14 @@ double relative_forward_error(double* x, double* y, int* la){
 
 	//resultat
 	return rmax / xmax;
-
 }
 
 int indexABCol(int i, int j, int *lab){
-	return 0;
+	return j*(*lab)+i;
 }
 
 // factorisatoin LU pour matrices tridiagonales
 int dgbtrftridiag(int *la, int*n, int *kl, int *ku, double *AB, int *lab, int *ipiv, int *info){
+
 	return *info;
 }
