@@ -129,6 +129,13 @@ int indexABCol(int i, int j, int *lab){
 
 // factorisatoin LU pour matrices tridiagonales
 int dgbtrftridiag(int *la, int*n, int *kl, int *ku, double *AB, int *lab, int *ipiv, int *info){
-
+	/*
+	la: longueur diagonale
+	n: 
+	kl: matrice triangulaire inferieure
+	ku: matrice triangulaire superieure
+	lab: à priori ègal a 3 car tridigonale
+	AB: la matrice de départ (en GB)
+	*/	
 	return *info;
 }

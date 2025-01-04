@@ -26,18 +26,21 @@ double eigmax_poisson1D(int *la){
 }
 
 double eigmin_poisson1D(int *la){
-	return 0;
+	return 4 * pow(sin(M_PI * (1.0/((*la) + 1) / 2.0)),2);
 }
 
 double richardson_alpha_opt(int *la){
-	return 0;
+	return 2.0 / (eigmin_poisson1D(&la) + eigmax_poisson1D(&la));
 }
+/*	On notera que l'alpha optimal pour Jaccobi et Gaus-Siedel est de 1/2
+*/
 
 void richardson_alpha(double *AB, double *RHS, double *X, double *alpha_rich, int *lab, int *la,int *ku, int*kl, double *tol, int *maxit, double *resvec, int *nbite){
 	/* AB : matrice poisson1D 
 	RHS : matrice dense (à priori)
 	X : matrice/vecteur solution
-	tol : la tolerance */
+	tol : la tolerance
+	resvec: vecteur contenant le résidu */
 
 	double *Y = malloc((*la)*sizeof(double));
 
@@ -45,7 +48,7 @@ void richardson_alpha(double *AB, double *RHS, double *X, double *alpha_rich, in
 	double nomrY = cblas_nomr2(Y);
 	cblas_dgbmv(CblasColMajor,CblasNoTrans,(*la),(*la),(*kl),(*ku),-1.0,AB,(*lab),X,1,1.0,Y,1);
 	double nomr_res = cblas_dnorm(Y);
-	double residu = nomr_res / nomrY;
+	double res = nomr_res / nomrY;
 
 	while((res > (*tol)) && ((*nbite) < (*maxit))){
 		cblas_daxpy((*la),(*alpha_rich),Y,1,X,1);
@@ -53,17 +56,19 @@ void richardson_alpha(double *AB, double *RHS, double *X, double *alpha_rich, in
 		(*nbite)++;
 	}
 
-	free(Y); //
-
+	free(Y);
 }
 
 void extract_MB_jacobi_tridiag(double *AB, double *MB, int *lab, int *la,int *ku, int*kl, int *kv){
+
 }
 
 void extract_MB_gauss_seidel_tridiag(double *AB, double *MB, int *lab, int *la,int *ku, int*kl, int *kv){
+	
 }
 
 // le truc general
 void richardson_MB(double *AB, double *RHS, double *X, double *MB, int *lab, int *la,int *ku, int*kl, double *tol, int *maxit, double *resvec, int *nbite){
+
 }
 
