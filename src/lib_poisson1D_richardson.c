@@ -59,24 +59,26 @@ void richardson_alpha(double *AB, double *RHS, double *X, double *alpha_rich, in
 	free(Y);
 }
 
+/* Dans les deux focntions qui suivent nous n'allos pas inverser MB, cela sera fait plus tard!*/
+
 void extract_MB_jacobi_tridiag(double *AB, double *MB, int *lab, int *la,int *ku, int*kl, int *kv){
 	/*
 	Jaccobi utilise la diagonale de A [selon la formule x(k+1) = x(k) + M^(-1) * (b-A*x(k))]
 	la: taille de la diagonale
 	lab: nombre de lignes
 	AB: matrice poisson 1D (?)
-	MB: matrice diagonale de taille lab*la (en GB)
+	MB: matrice diagonale de taille lab*la (en GB) => diag(A)
 	ku: nombre de diagonales superieures
 	kl: nombre de diagonales inferieures
 	kv: taille de l'offset
 	*/
 
 	for(int i=0;i<la;i++){ // pour chaque colonne
-		for(int j=0;j<(lab+kv);j++){ // pour chaque ligne j augmente mais (lab+kv - j) diminue
+		for(int j=0;j<(lab+kv);j++){ // pour chaque ligne
 			if(j==(ku+kv)){ // on cible la diagonale
-				MB[la*i+j] = 1 / AB[la*i+j]; // pour avoir l'inverse de la diagonale extraite
+				MB[la*i+j] = AB[la*i+j]; // diag(A)
 			}else{
-				MB[la*i+j] = 0;
+				MB[la*i+j] = 0; // pour le reste c'est zéro
 			}
 		}
 	}
@@ -88,20 +90,37 @@ void extract_MB_gauss_seidel_tridiag(double *AB, double *MB, int *lab, int *la,i
 	la: taille de la diagonale
 	lab: nombre de lignes
 	AB: matrice poisson 1D (?)
-	MB: matrice diagonale de taille lab*la (en GB)
+	MB: matrice diagonale de taille lab*la (en GB) => diag(A)-E
 	ku: nombre de diagonales superieures
 	kl: nombre de diagonales inferieures
 	kv: taille de l'offset
 	*/
-
+	for(int i=0;i<la;i++){ // pour chaque colonne
+		for(int j=0;j<(lab+kv);j++){ // pour chaque ligne
+			if(j==(ku+kv)){ // on cible la diagonale et la diagonale inferieure
+				MB[la*i+j] = AB[la*i+j]; // diag(A)
+			}else if (j==(ku+kv+1)){
+				MB[la*i+j] = (-1) * AB[la*i+j]; // -E
+			}else{
+				MB[la*i+j] = 0; // pour le reste c'est zéro
+			}
+		}
+	}
 }
 
-// le truc general
+// la definition de la méthode de Richardson: [x^(k+1) = x^k + M^(-1) * (b - A * x^k)]
 void richardson_MB(double *AB, double *RHS, double *X, double *MB, int *lab, int *la,int *ku, int*kl, double *tol, int *maxit, double *resvec, int *nbite){
 	/*
 	les arguments sont les mêmes que pour la fonction richardson_alpha() sauf
 	MB: matrice d'itération (en GB) -> defini la méthode itérative de Richardson qu'on utilise
+	selon la definition de la méthode de Richardson, MB doit être inversé !
+	RHS: contient le residu (Right Hand Side)
 	*/
+
+	// r^0 = (b - A * x^0) le residu
+	
+
+	// Condition d'arret = || r^(k+1) < eps || ou maxit
 
 }
 
