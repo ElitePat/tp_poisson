@@ -109,18 +109,43 @@ void extract_MB_gauss_seidel_tridiag(double *AB, double *MB, int *lab, int *la,i
 }
 
 // la definition de la méthode de Richardson: [x^(k+1) = x^k + M^(-1) * (b - A * x^k)]
-void richardson_MB(double *AB, double *RHS, double *X, double *MB, int *lab, int *la,int *ku, int*kl, double *tol, int *maxit, double *resvec, int *nbite){
+void richardson_MB(double *AB, double *RHS, double *X, double *MB, int *lab, int *la, int *ku, int*kl, double *tol, int *maxit, double *resvec, int *nbite){
 	/*
+	lab: nombre de lignes de AB
+	la: taille de la diagonale de AB
 	les arguments sont les mêmes que pour la fonction richardson_alpha() sauf
 	MB: matrice d'itération (en GB) -> defini la méthode itérative de Richardson qu'on utilise
-	selon la definition de la méthode de Richardson, MB doit être inversé !
 	RHS: contient le residu (Right Hand Side)
 	*/
 
-	// r^0 = (b - A * x^0) le residu
-	
+	double *B = malloc((*la)*sizeof(double));
+	cblas_dcopy((*la),RHS,B); // on copie RHS dans B
+	// on va utiliser RHS et laisser B constant
 
-	// Condition d'arret = || r^(k+1) < eps || ou maxit
+	// r^0 = (b - A * x^0) le residu 
+	cblas_dgbmv(CblasColMajor,CblasNoTrans,(*la),(*lab),(*kl),(*ku),1.0,AB,(*la),X,1,-1.0,RHS,1); // RHS = (1.0 * AB * X + -1.0 * RHS)
 
+	// Condition d'arret: (|| r^(k+1) || < eps) ou nb d'iterations maxit
+	double norm_res;
+	while((norm_res > (*tol)) || ((*nbite) < (*maxit))){
+		/* Nous allons pas inverser la matrice mais nous allons faire ceci:
+		x^(k+1) = x^k + M^(-1) * (b - A * x^k)
+			<=> M*x^(k+1) = M*x^k + (b-A*x^k)
+			<=> MB*X = MB*X + (AB*X + RHS=B)*/
+		cblas_dcopy((*la),B,RHS); // on copie B dans RHS
+		cblas_dgbmv(CblasColMajor,CblasNoTrans,(*la),(*lab),(*kl),(*ku),1.0,AB,(*la),X,1,-1.0,RHS,1); // RHS = (1.0 * AB * X + -1.0 * RHS)
+		// norm_res = cblas_dnorm(RHS); // calcul de la norme de RHS^(k+1)
+		cblas_dgbmv(CblasColMajor,CblasNoTrans,(*la),(*lab),(*kl),(*ku),1.0,MB,(*la),X,1,-1.0,RHS,1); // RHS = (1.0 * MB * X + 1.0 * RHS)
+		/* Au lieu de faire dgbsv() ici on aurait pu resoudre l'equation avec dgbtrftridiag()
+		 à cause de MB qui est tridiadonale */
+		//dgbsv (fact LU et LU*x=y)
+		int info, *ipiv;
+		dgbsv((*la),(*kl),(*ku),1,MB,(*la),ipiv,RHS,(*la),&info);
+		if(info!=0){printf("Attention DGBSV: info = %d",info);}
+		cblas_dcopy((*la),RHS,X); // on copie RHS dans X
+		(*nbite)++;
+	}
+
+	free(B);
 }
 
