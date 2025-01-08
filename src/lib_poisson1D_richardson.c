@@ -30,7 +30,7 @@ double eigmin_poisson1D(int *la){
 }
 
 double richardson_alpha_opt(int *la){
-	return 2.0 / (eigmin_poisson1D(&la) + eigmax_poisson1D(&la));
+	return 2.0 / (eigmin_poisson1D(la) + eigmax_poisson1D(la));
 }
 /*	On notera que l'alpha optimal pour Jaccobi et Gaus-Siedel est de 1/2
 */
@@ -44,10 +44,10 @@ void richardson_alpha(double *AB, double *RHS, double *X, double *alpha_rich, in
 
 	double *Y = malloc((*la)*sizeof(double));
 
-	cblas_dcopy((*la),Y,RHS); // arguments like N, X, incX, Y, incY
-	double nomrY = cblas_nomr2(Y);
+	cblas_dcopy((*la),Y,0,RHS,0); // arguments like N, X, incX, Y, incY
+	double nomrY = cblas_dnrm2((*la),Y,0);
 	cblas_dgbmv(CblasColMajor,CblasNoTrans,(*la),(*la),(*kl),(*ku),-1.0,AB,(*lab),X,1,1.0,Y,1); // alpha*A*x + beta*y
-	double nomr_res = cblas_dnorm(Y);
+	double nomr_res = cblas_dnrm2((*la),Y,0);
 	double res = nomr_res / nomrY;
 
 	while((res > (*tol)) && ((*nbite) < (*maxit))){
@@ -73,12 +73,12 @@ void extract_MB_jacobi_tridiag(double *AB, double *MB, int *lab, int *la,int *ku
 	kv: taille de l'offset
 	*/
 
-	for(int i=0;i<la;i++){ // pour chaque colonne
-		for(int j=0;j<(lab+kv);j++){ // pour chaque ligne
-			if(j==(ku+kv)){ // on cible la diagonale
-				MB[la*i+j] = AB[la*i+j]; // diag(A)
+	for(int i=0;i<(*la);i++){ // pour chaque colonne
+		for(int j=0;j<((*lab)+(*kv));j++){ // pour chaque ligne
+			if(j==((*ku)+(*kv))){ // on cible la diagonale
+				MB[(*la)*i+j] = AB[(*la)*i+j]; // diag(A)
 			}else{
-				MB[la*i+j] = 0; // pour le reste c'est zéro
+				MB[(*la)*i+j] = 0; // pour le reste c'est zéro
 			}
 		}
 	}
@@ -95,14 +95,14 @@ void extract_MB_gauss_seidel_tridiag(double *AB, double *MB, int *lab, int *la,i
 	kl: nombre de diagonales inferieures
 	kv: taille de l'offset
 	*/
-	for(int i=0;i<la;i++){ // pour chaque colonne
-		for(int j=0;j<(lab+kv);j++){ // pour chaque ligne
-			if(j==(ku+kv)){ // on cible la diagonale et la diagonale inferieure
-				MB[la*i+j] = AB[la*i+j]; // diag(A)
-			}else if (j==(ku+kv+1)){
-				MB[la*i+j] = (-1) * AB[la*i+j]; // -E
+	for(int i=0;i<(*la);i++){ // pour chaque colonne
+		for(int j=0;j<((*lab)+(*kv));j++){ // pour chaque ligne
+			if(j==((*ku)+(*kv))){ // on cible la diagonale et la diagonale inferieure
+				MB[(*la)*i+j] = AB[(*la)*i+j]; // diag(A)
+			}else if (j==((*ku)+(*kv)+1)){
+				MB[(*la)*i+j] = (-1) * AB[(*la)*i+j]; // -E
 			}else{
-				MB[la*i+j] = 0; // pour le reste c'est zéro
+				MB[(*la)*i+j] = 0; // pour le reste c'est zéro
 			}
 		}
 	}
@@ -119,7 +119,7 @@ void richardson_MB(double *AB, double *RHS, double *X, double *MB, int *lab, int
 	*/
 
 	double *B = malloc((*la)*sizeof(double));
-	cblas_dcopy((*la),RHS,B); // on copie RHS dans B
+	cblas_dcopy((*la),RHS,0,B,0); // on copie RHS dans B
 	// on va utiliser RHS et laisser B constant
 
 	// r^0 = (b - A * x^0) le residu 
@@ -132,17 +132,17 @@ void richardson_MB(double *AB, double *RHS, double *X, double *MB, int *lab, int
 		x^(k+1) = x^k + M^(-1) * (b - A * x^k)
 			<=> M*x^(k+1) = M*x^k + (b-A*x^k)
 			<=> MB*X = MB*X + (AB*X + RHS=B)*/
-		cblas_dcopy((*la),B,RHS); // on copie B dans RHS
+		cblas_dcopy((*la),B,0,RHS,0); // on copie B dans RHS
 		cblas_dgbmv(CblasColMajor,CblasNoTrans,(*la),(*lab),(*kl),(*ku),1.0,AB,(*la),X,1,-1.0,RHS,1); // RHS = (1.0 * AB * X + -1.0 * RHS)
-		// norm_res = cblas_dnorm(RHS); // calcul de la norme de RHS^(k+1)
+		norm_res = cblas_dnrm2((*la),RHS,0); // calcul de la norme de RHS^(k+1)
 		cblas_dgbmv(CblasColMajor,CblasNoTrans,(*la),(*lab),(*kl),(*ku),1.0,MB,(*la),X,1,-1.0,RHS,1); // RHS = (1.0 * MB * X + 1.0 * RHS)
 		/* Au lieu de faire dgbsv() ici on aurait pu resoudre l'equation avec dgbtrftridiag()
 		 à cause de MB qui est tridiadonale */
 		//dgbsv (fact LU et LU*x=y)
 		int info, *ipiv;
-		dgbsv((*la),(*kl),(*ku),1,MB,(*la),ipiv,RHS,(*la),&info);
+		dgbsv_((*la),(*kl),(*ku),1,MB,(*la),ipiv,RHS,(*la),&info);
 		if(info!=0){printf("Attention DGBSV: info = %d",info);}
-		cblas_dcopy((*la),RHS,X); // on copie RHS dans X
+		cblas_dcopy((*la),RHS,0,X,0); // on copie RHS dans X
 		(*nbite)++;
 	}
 

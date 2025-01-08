@@ -14,9 +14,9 @@
 # Follow the example of the machine called "ambre" in the 
 # file ambre.mk
 #
-HOSTNAME?=$(shell hostname)
-include $(HOSTNAME).mk
-
+#HOSTNAME?=$(shell hostname)
+#include $(HOSTNAME).mk
+include ambre.mk
 # 
 # -- Compiler Option
 OPTC=${OPTCLOCAL}
