@@ -125,7 +125,7 @@ void richardson_MB(double *AB, double *RHS, double *X, double *MB, int *lab, int
 	// r^0 = (b - A * x^0) le residu 
 	cblas_dgbmv(CblasColMajor,CblasNoTrans,(*la),(*lab),(*kl),(*ku),1.0,AB,(*la),X,1,-1.0,RHS,1); // RHS = (1.0 * AB * X + -1.0 * RHS)
 
-	// Condition d'arret: (|| r^(k+1) || < eps) ou nb d'iterations maxit
+	// Condition d'arret: (|| r^(k+1) || < eps) ou nb d'iterations maxit 
 	double norm_res;
 	while((norm_res > (*tol)) || ((*nbite) < (*maxit))){
 		/* Nous allons pas inverser la matrice mais nous allons faire ceci:
@@ -139,8 +139,9 @@ void richardson_MB(double *AB, double *RHS, double *X, double *MB, int *lab, int
 		/* Au lieu de faire dgbsv() ici on aurait pu resoudre l'equation avec dgbtrftridiag()
 		 à cause de MB qui est tridiadonale */
 		//dgbsv (fact LU et LU*x=y)
-		int info, *ipiv;
-		dgbsv_((*la),(*kl),(*ku),1,MB,(*la),ipiv,RHS,(*la),&info);
+		int test=1;
+		int info, *ipiv, *nrhs=&test;
+		dgbsv_(la,kl,ku,nrhs,MB,la,ipiv,RHS,la,&info);
 		if(info!=0){printf("Attention DGBSV: info = %d",info);}
 		cblas_dcopy((*la),RHS,0,X,0); // on copie RHS dans X
 		(*nbite)++;
